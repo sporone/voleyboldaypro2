@@ -1,27 +1,20 @@
-name: GitHub Pages Live Data
+name: Refresh Live Data
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
   schedule:
     - cron: "7/10 * * * *"
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
-  group: pages-live-data
+  group: refresh-live-data
   cancel-in-progress: true
 
 jobs:
-  build-and-deploy:
+  refresh:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Kaynak kodu al
@@ -66,25 +59,22 @@ jobs:
           from datetime import datetime, timezone
           payload = {
               "generated_at": datetime.now(timezone.utc).isoformat(),
-              "mode": "github-pages-actions",
+              "mode": "github-actions-static-json",
           }
           with open("data/updated-at.json", "w", encoding="utf-8") as handle:
               json.dump(payload, handle, ensure_ascii=False, indent=2)
           PY
 
-          mkdir -p /tmp/site
-          cp index.html volley.css volley-app.js /tmp/site/
-          cp -r data /tmp/site/data
-          touch /tmp/site/.nojekyll
-
-      - name: Pages ayarla
-        uses: actions/configure-pages@v5
-
-      - name: Site paketini yükle
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: /tmp/site
-
-      - name: GitHub Pages yayını
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Veri dosyalarını repoya yaz
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          if git diff --cached --quiet; then
+            echo "Veri değişmedi."
+          else
+            git commit -m "Canlı veri dosyalarını güncelle [skip ci]"
+            git push
+          fi
