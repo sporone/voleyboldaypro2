@@ -1,0 +1,10 @@
+.git
+.agents
+.cache
+node_modules
+npm-debug.log
+*.xlsx
+*.xls
+*.csv
+*.tmp
+*.log
