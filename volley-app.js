@@ -1,7 +1,8 @@
-const API_URL = "/api/standings";
-const LOGO_API_URL = "/api/logos";
-const REGION_API_URL = "/api/region-matches";
-const ROSTER_API_URL = "/api/rosters";
+const STATIC_DATA_MODE = !["localhost", "127.0.0.1", ""].includes(window.location.hostname);
+const API_URL = STATIC_DATA_MODE ? "data/payload.json" : "/api/standings";
+const LOGO_API_URL = STATIC_DATA_MODE ? "data/logos.json" : "/api/logos";
+const REGION_API_URL = STATIC_DATA_MODE ? "data/region-matches" : "/api/region-matches";
+const ROSTER_API_URL = STATIC_DATA_MODE ? "data/rosters.json" : "/api/rosters";
 const REFRESH_MS = 60_000;
 const SEASON_START = "01.07.2025";
 const SEASON_END = "30.06.2026";
@@ -62,6 +63,16 @@ const state = {
 };
 
 const app = document.querySelector("#app");
+
+function dataUrl(url, force = false) {
+  if (!STATIC_DATA_MODE) return `${url}${force ? `${url.includes("?") ? "&" : "?"}refresh=1` : ""}`;
+  return `${url}${url.includes("?") ? "&" : "?"}v=${Date.now()}`;
+}
+
+function regionDataUrl(region, force = false) {
+  if (STATIC_DATA_MODE) return dataUrl(`${REGION_API_URL}-${encodeURIComponent(region)}.json`, force);
+  return `${REGION_API_URL}?region=${encodeURIComponent(region)}${force ? "&refresh=1" : ""}`;
+}
 
 function trCompare(a, b) {
   return String(a || "").localeCompare(String(b || ""), "tr-TR", { numeric: true });
@@ -1096,7 +1107,7 @@ async function loadData(force = false) {
   renderShell();
 
   try {
-    const response = await fetch(`${API_URL}${force ? "?refresh=1" : ""}`, {
+    const response = await fetch(dataUrl(API_URL, force), {
       headers: { Accept: "application/json" },
       cache: "no-store",
     });
@@ -1118,7 +1129,7 @@ async function loadData(force = false) {
 }
 
 async function loadRegionMatches(force = false) {
-  const response = await fetch(`${REGION_API_URL}?region=${encodeURIComponent(state.region)}${force ? "&refresh=1" : ""}`, {
+  const response = await fetch(regionDataUrl(state.region, force), {
     headers: { Accept: "application/json" },
     cache: "no-store",
   });
@@ -1134,7 +1145,7 @@ async function loadRegionMatches(force = false) {
 }
 
 async function loadRosters(force = false) {
-  const response = await fetch(`${ROSTER_API_URL}${force ? "?refresh=1" : ""}`, {
+  const response = await fetch(dataUrl(ROSTER_API_URL, force), {
     headers: { Accept: "application/json" },
     cache: "no-store",
   });
@@ -1144,7 +1155,7 @@ async function loadRosters(force = false) {
 }
 
 async function loadLogos(force = false) {
-  const response = await fetch(`${LOGO_API_URL}${force ? "?refresh=1" : ""}`, {
+  const response = await fetch(dataUrl(LOGO_API_URL, force), {
     headers: { Accept: "application/json" },
     cache: "no-store",
   });

@@ -1,0 +1,90 @@
+name: GitHub Pages Live Data
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: "7/10 * * * *"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-live-data
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Kaynak kodu al
+        uses: actions/checkout@v4
+
+      - name: Node.js kur
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Python kur
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Canlı veri dosyalarını üret
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p data
+          node server.js > server.log 2>&1 &
+          echo $! > server.pid
+          trap 'cat server.log || true; kill $(cat server.pid) 2>/dev/null || true' EXIT
+
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3000/api/health >/dev/null; then
+              break
+            fi
+            sleep 2
+          done
+
+          curl -fsS --retry 2 --max-time 300 "http://127.0.0.1:3000/api/standings?refresh=1" -o data/payload.json
+          curl -fsS --retry 2 --max-time 120 "http://127.0.0.1:3000/api/logos?refresh=1" -o data/logos.json
+          curl -fsS --retry 2 --max-time 120 "http://127.0.0.1:3000/api/rosters?refresh=1" -o data/rosters.json
+          curl -fsS --retry 2 --max-time 300 "http://127.0.0.1:3000/api/region-matches?region=istanbul" -o data/region-matches-istanbul.json
+          curl -fsS --retry 2 --max-time 120 "http://127.0.0.1:3000/api/region-matches?region=kocaeli&refresh=1" -o data/region-matches-kocaeli.json
+          curl -fsS --retry 2 --max-time 120 "http://127.0.0.1:3000/api/region-matches?region=ankara&refresh=1" -o data/region-matches-ankara.json
+          curl -fsS --retry 2 --max-time 120 "http://127.0.0.1:3000/api/region-matches?region=izmir&refresh=1" -o data/region-matches-izmir.json
+
+          python - <<'PY'
+          import json
+          from datetime import datetime, timezone
+          payload = {
+              "generated_at": datetime.now(timezone.utc).isoformat(),
+              "mode": "github-pages-actions",
+          }
+          with open("data/updated-at.json", "w", encoding="utf-8") as handle:
+              json.dump(payload, handle, ensure_ascii=False, indent=2)
+          PY
+
+          mkdir -p /tmp/site
+          cp index.html volley.css volley-app.js /tmp/site/
+          cp -r data /tmp/site/data
+          touch /tmp/site/.nojekyll
+
+      - name: Pages ayarla
+        uses: actions/configure-pages@v5
+
+      - name: Site paketini yükle
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: /tmp/site
+
+      - name: GitHub Pages yayını
+        id: deployment
+        uses: actions/deploy-pages@v4
