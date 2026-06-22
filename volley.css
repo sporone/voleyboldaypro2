@@ -797,6 +797,74 @@ select:focus {
   border-radius: 8px;
 }
 
+.standing-group-panel {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding: 14px;
+  background: #f7f9fc;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.standing-group-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.standing-group-heading strong {
+  color: var(--navy);
+  font-size: 1rem;
+}
+
+.standing-group-heading span {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.standing-group-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+}
+
+.standing-group {
+  display: grid;
+  gap: 5px;
+  min-height: 86px;
+  padding: 12px;
+  color: var(--navy);
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  text-align: left;
+}
+
+.standing-group span,
+.standing-group small {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 820;
+}
+
+.standing-group strong {
+  font-size: 0.92rem;
+}
+
+.standing-group.active {
+  color: #ffffff;
+  background: var(--navy);
+  border-color: var(--navy);
+  box-shadow: 0 14px 28px rgba(18, 34, 56, 0.16);
+}
+
+.standing-group.active span,
+.standing-group.active small {
+  color: rgba(255, 255, 255, 0.76);
+}
+
 .desktop-table {
   overflow: auto;
   max-height: 72vh;
@@ -1361,6 +1429,25 @@ td small {
 
   .roster-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .standing-group-heading {
+    display: grid;
+  }
+
+  .standing-group-list {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .standing-group-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .standing-group {
+    min-width: 230px;
   }
 
   .logo-rail {

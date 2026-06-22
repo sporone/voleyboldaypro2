@@ -242,6 +242,48 @@ function getStandings() {
     );
 }
 
+function standingGroupKey(row) {
+  return [K.gender, K.category, K.cluster, K.competition].map((key) => text(row[key])).join("||");
+}
+
+function getStandingGroups(rows) {
+  const groups = new Map();
+  rows.forEach((row) => {
+    const key = standingGroupKey(row);
+    if (!key.replace(/\|/g, "")) return;
+    const entry =
+      groups.get(key) ||
+      {
+        key,
+        gender: text(row[K.gender]),
+        category: text(row[K.category]),
+        cluster: text(row[K.cluster]),
+        competition: text(row[K.competition]),
+        teamCount: 0,
+      };
+    entry.teamCount += 1;
+    groups.set(key, entry);
+  });
+  return [...groups.values()].sort(
+    (a, b) =>
+      trCompare(a.gender, b.gender) ||
+      trCompare(a.category, b.category) ||
+      trCompare(a.cluster, b.cluster) ||
+      trCompare(a.competition, b.competition)
+  );
+}
+
+function currentStandingGroup(groups) {
+  const selectedKey = [state.filters.gender, state.filters.category, state.filters.cluster, state.filters.competition]
+    .map(text)
+    .join("||");
+  return groups.find((group) => group.key === selectedKey) || groups[0] || null;
+}
+
+function standingGroupMatches(row, group) {
+  return group && standingGroupKey(row) === group.key;
+}
+
 function getMatches() {
   if (state.liveMatches.length) {
     return state.liveMatches
@@ -768,8 +810,12 @@ function renderActiveTab() {
 function renderStandings() {
   const rows = getStandings();
   if (!rows.length) return emptyState("Bu filtrelere uygun puan durumu kaydı bulunamadı.");
-  const limitedRows = rows.slice(0, 500);
+  const groups = getStandingGroups(rows);
+  const selectedGroup = currentStandingGroup(groups);
+  const groupedRows = selectedGroup ? rows.filter((row) => standingGroupMatches(row, selectedGroup)) : rows;
+  const limitedRows = groupedRows.slice(0, 500);
   return `
+    ${renderStandingGroupPicker(groups, selectedGroup)}
     <div class="desktop-table">
       <table>
         <thead>
@@ -812,6 +858,37 @@ function renderStandings() {
       ${limitedRows.map(renderStandingCard).join("")}
     </div>
     ${rows.length > limitedRows.length ? `<p class="limit-note">Performans için ilk ${limitedRows.length} kayıt gösteriliyor. Filtreyi daraltarak daha özel sonuç alın.</p>` : ""}
+  `;
+}
+
+function renderStandingGroupPicker(groups, selectedGroup) {
+  if (!groups.length) return "";
+  return `
+    <div class="standing-group-panel" aria-label="Puan tablosu yar\u0131\u015fma se\u00e7imi">
+      <div class="standing-group-heading">
+        <strong>Yar\u0131\u015fma puan tablosu</strong>
+        <span>${groups.length} kategori/yar\u0131\u015fma bulundu. Birini se\u00e7erek sadece o tablonun tak\u0131mlar\u0131n\u0131 g\u00f6r\u00fcn.</span>
+      </div>
+      <div class="standing-group-list">
+        ${groups
+          .map((group) => {
+            const payload = {
+              gender: group.gender,
+              category: group.category,
+              cluster: group.cluster,
+              competition: group.competition,
+            };
+            return `
+              <button class="standing-group ${selectedGroup?.key === group.key ? "active" : ""}" type="button" data-standing-group="${dataAttr(JSON.stringify(payload))}">
+                <span>${escapeHtml(group.gender)} / ${escapeHtml(group.category)}</span>
+                <strong>${escapeHtml(group.competition)}</strong>
+                <small>${escapeHtml(group.cluster)} | ${group.teamCount} tak\u0131m</small>
+              </button>
+            `;
+          })
+          .join("")}
+      </div>
+    </div>
   `;
 }
 
@@ -1047,6 +1124,19 @@ function bindEvents() {
   document.querySelector("[data-close-modal]")?.addEventListener("click", closeModal);
   document.querySelector("#action-modal")?.addEventListener("click", (event) => {
     if (event.target.id === "action-modal") closeModal();
+  });
+
+  document.querySelectorAll("[data-standing-group]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const group = JSON.parse(decodeURIComponent(button.dataset.standingGroup || "{}"));
+      state.filters.gender = group.gender || "";
+      state.filters.category = group.category || "";
+      state.filters.cluster = group.cluster || "";
+      state.filters.competition = group.competition || "";
+      state.filters.q = "";
+      state.tab = "standings";
+      renderShell();
+    });
   });
 
   document.querySelectorAll("[data-show-standings]").forEach((button) => {
