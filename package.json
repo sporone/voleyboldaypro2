@@ -1,0 +1,10 @@
+{
+  "name": "istanbul-voleybol-puan-durumu",
+  "version": "1.0.0",
+  "private": true,
+  "description": "İstanbul Voleybol İl Temsilciliği puan durumu verilerini otomatik yenileyen mobil uyumlu web paneli.",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  }
+}

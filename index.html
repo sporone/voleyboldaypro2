@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>İstanbul Voleybol | Canlı Puan Durumu</title>
+    <meta
+      name="description"
+      content="İstanbul Voleybol İl Temsilciliği puan durumu verilerini otomatik güncellenen modern ve mobil uyumlu panelde takip edin."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="volley.css" />
+  </head>
+  <body>
+    <div id="app"></div>
+    <header class="site-header" aria-label="Üst menü">
+      <a class="brand" href="#top" aria-label="SporKayıt ana sayfa">
+        <span class="brand-mark" aria-hidden="true">SK</span>
+        <span>SporKayıt</span>
+      </a>
+      <nav class="nav-links" aria-label="Sayfa bölümleri">
+        <a href="#okullar">Okullar</a>
+        <a href="#kayit">Okul Kaydı</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Veliler için spor okulu rehberi</p>
+          <h1>Çocuğunuz için en yakın spor okulundan <span class="free-highlight">ÜCRETSİZ</span> deneme dersi alın.</h1>
+          <p class="hero-text">
+            Futbol, basketbol, voleybol, yüzme ve cimnastik okullarını tek
+            sayfada karşılaştırın. Beğendiğiniz okulun WhatsApp hattına hazır
+            deneme dersi mesajı gönderin.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#okullar">Okulları gör</a>
+            <a class="button ghost" href="#kayit">Okulunuzu ekleyin</a>
+          </div>
+        </div>
+
+        <aside class="score-panel" aria-label="Platform özeti">
+          <div class="panel-topline">
+            <span>Listelenen okul</span>
+            <strong id="school-count">0</strong>
+          </div>
+          <div class="funnel-list">
+            <div>
+              <span>Branş</span>
+              <strong id="sport-count">0</strong>
+            </div>
+            <div>
+              <span>İlçe</span>
+              <strong id="district-count">0</strong>
+            </div>
+            <div>
+              <span>WhatsApp</span>
+              <strong>1 tik</strong>
+            </div>
+          </div>
+          <div class="offer-box">
+            <span>Okul kaydı</span>
+            <strong>1 kahve = 2 ay</strong>
+            <p>Kayıt paketini seçin, okulunuzu listeye ekleyelim.</p>
+          </div>
+        </aside>
+      </section>
+
+      <section class="section-strip" aria-label="Platform özellikleri">
+        <article>
+          <strong>Branşa göre arama</strong>
+          <span>Futbol, basketbol, voleybol, yüzme ve cimnastik okullarını filtreleyin.</span>
+        </article>
+        <article>
+          <strong>İlçeye göre seçim</strong>
+          <span>Size yakın spor okulunu hızlı şekilde bulun.</span>
+        </article>
+        <article>
+          <strong>WhatsApp ile iletişim</strong>
+          <span>Deneme dersi talebinizi seçilen okulun kendi hattına gönderin.</span>
+        </article>
+      </section>
+
+      <section class="schools-section" id="okullar">
+        <div class="section-heading">
+          <p class="eyebrow">Spor okulları</p>
+          <h2>Ücretsiz deneme dersi alabileceğiniz okullar</h2>
+          <p>
+            Filtreleri kullanarak size uygun okulu bulun. Deneme dersi butonu,
+            o okulun kendi WhatsApp numarasına mesaj gönderir.
+          </p>
+        </div>
+
+        <div class="filters" aria-label="Okul filtreleri">
+          <label>
+            Branş
+            <select id="sport-filter">
+              <option value="">Tüm branşlar</option>
+            </select>
+          </label>
+          <label>
+            İlçe
+            <select id="district-filter">
+              <option value="">Tüm ilçeler</option>
+            </select>
+          </label>
+          <label>
+            Yaş
+            <select id="age-filter">
+              <option value="">Tüm yaşlar</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="school-grid" id="school-list" aria-live="polite"></div>
+      </section>
+
+      <section class="register-section" id="kayit">
+        <div class="section-heading">
+          <p class="eyebrow">Spor okulları için</p>
+          <h2>Okulunuzu SporKayıt listesine ekleyin.</h2>
+          <p>
+            Okul kartınızda branşınız, ilçeniz, yaş aralığınız, tesis
+            bilginiz ve WhatsApp deneme dersi butonunuz yer alır.
+          </p>
+        </div>
+        <div class="pricing-grid" aria-label="Okul kayıt paketleri">
+          <article class="pricing-card">
+            <span class="coffee-count">1 kahve</span>
+            <h3>2 ay kullanım</h3>
+            <p>1 ay kayıt + 1 ay hediye. Yeni başlayan okullar için hızlı deneme paketi.</p>
+            <ul class="pricing-perks">
+              <li>Okul kartı yayına alınır</li>
+              <li>WhatsApp deneme dersi butonu eklenir</li>
+              <li>Branş ve ilçe filtrelerinde görünür</li>
+            </ul>
+            <a
+              class="button ghost"
+              href="https://buymeacoffee.com/bedenegitimi"
+              data-payment-link
+              rel="noopener"
+            >
+              1 kahve ile kayıt ol
+            </a>
+          </article>
+
+          <article class="pricing-card">
+            <span class="coffee-count">3 kahve</span>
+            <h3>6 ay kullanım</h3>
+            <p>3 ay kayıt + 3 ay hediye. Yeni dönem, ara tatil ve kayıt yoğunluğu için güçlü paket.</p>
+            <ul class="pricing-perks">
+              <li>Okul kartı yayında kalır</li>
+              <li>Liste içinde öne çıkan bilgi alanı</li>
+              <li>Program ve tesis bilgileri güncellenebilir</li>
+            </ul>
+            <a
+              class="button ghost"
+              href="https://buymeacoffee.com/bedenegitimi"
+              data-payment-link
+              rel="noopener"
+            >
+              3 kahve ile kayıt ol
+            </a>
+          </article>
+
+          <article class="pricing-card featured">
+            <span class="coffee-count">5 kahve</span>
+            <h3>10 ay kullanım</h3>
+            <p>5 ay kayıt + 5 ay hediye. Eylül ayından haziran sonuna kadar tüm sezonu kapsar.</p>
+            <ul class="pricing-perks">
+              <li>Tüm sezon kesintisiz görünürlük</li>
+              <li>Sezon paketi olarak öne çıkarılır</li>
+              <li>Kayıt dönemlerinde bilgi güncelleme desteği</li>
+            </ul>
+            <a
+              class="button primary"
+              href="https://buymeacoffee.com/bedenegitimi"
+              data-payment-link
+              rel="noopener"
+            >
+              5 kahve ile sezonu al
+            </a>
+          </article>
+        </div>
+
+        <div class="payment-note">
+          <strong>Ödeme sayfasında</strong>
+          <p>Buy Me a Coffee sayfasında almak istediğiniz paket kadar kahve adedini seçin: 1, 3 veya 5.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>SporKayıt spor okulu bulma platformu</span>
+      <a href="#kayit">Okul kaydı</a>
+    </footer>
+
+    <script src="volley-app.js"></script>
+  </body>
+</html>
